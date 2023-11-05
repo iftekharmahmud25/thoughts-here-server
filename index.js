@@ -26,6 +26,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const usersCollection = client.db('ThoughtHere').collection('users');
+    const blogsCollection = client.db('ThoughtHere').collection('allBlogs')
+
+    
 
 
     app.get("/users", async (req, res) => {
@@ -45,6 +48,23 @@ async function run() {
         res.send(result);
       });
 
+      app.post('/blogs', async (req, res) => {
+        try {
+            const blogData = req.body;
+            const result = await blogsCollection.insertOne(blogData);
+
+            if (result.insertedCount === 1) {
+                res.status(201).json({ message: 'Blog created successfully' });
+            } else {
+                res.status(500).json({ message: 'Error creating blog' });
+            }
+        } catch (error) {
+            console.error('Error creating blog:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    });
+
+  
 
 
 
