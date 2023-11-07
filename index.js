@@ -28,6 +28,7 @@ async function run() {
     const usersCollection = client.db('ThoughtHere').collection('users');
     const blogsCollection = client.db('ThoughtHere').collection('allBlogs')
     const wishlistCollection = client.db('ThoughtHere').collection('wishlist')
+    
 
     app.get("/users", async (req, res) => {
         const result = await usersCollection.find().toArray();
@@ -61,8 +62,8 @@ async function run() {
      app.get("/blogs/:id", async (req, res) => {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) }
-        const brandDetails = await blogsCollection.findOne(query)
-        res.send(brandDetails)
+        const blogDetails = await blogsCollection.findOne(query)
+        res.send(blogDetails)
       })
 
      app.post("/wishlist", async (req, res) => {       
@@ -97,6 +98,15 @@ async function run() {
           res.status(500).json({ error: "Failed to fetch blogs from the wishlist" });
         }
       });
+
+      app.get("/wishlist/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }
+        const blogDetails = await wishlistCollection.findOne(query)
+        res.send(blogDetails)
+      })
+
+  
 
 
     
