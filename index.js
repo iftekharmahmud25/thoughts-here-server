@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000; 
@@ -32,7 +32,8 @@ async function run() {
     app.get("/users", async (req, res) => {
         const result = await usersCollection.find().toArray();
         res.send(result);
-      });  
+      });
+
     app.post("/users", async (req, res) => {
         const user = req.body;
         const query = { email: user.email };
@@ -43,23 +44,28 @@ async function run() {
   
         const result = await usersCollection.insertOne(user);
         res.send(result);
-      });     
+      });
+
     app.get("/blogs", async (req,res)=> {
     const result = await blogsCollection.find().toArray()
     res.send(result)
      })
+
     app.post('/blogs', async (req, res) => {
-        
             const blogData = req.body;
             const result = await blogsCollection.insertOne(blogData);
             console.log(result)
-            res.send(result)
-            
-        
+            res.send(result)                 
      });
 
-     app.post("/wishlist", async (req, res) => {
-        
+     app.get("/blogs/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }
+        const brandDetails = await blogsCollection.findOne(query)
+        res.send(brandDetails)
+      })
+
+     app.post("/wishlist", async (req, res) => {       
           const blog = req.body;
           blog.user = req.body.user;
           const result = await wishlistCollection.insertOne(blog);
@@ -67,11 +73,9 @@ async function run() {
      });
 
      app.delete("/wishlist/:blogTitle", async (req, res) => {
-        try {
-            
+        try {           
             const blogTitle = req.params.blogTitle;
-            const result = await wishlistCollection.deleteOne({  title: blogTitle });
-    
+            const result = await wishlistCollection.deleteOne({  title: blogTitle });   
             if (result.deletedCount === 1) {
                 res.status(200).json({ message: "Blog removed from wishlist." });
             } else {
@@ -83,9 +87,7 @@ async function run() {
         }
     });
 
-    
-
-      app.get("/wishlist", async (req, res) => {
+    app.get("/wishlist", async (req, res) => {
         try {
           const user = req.query.user; 
           const blogsInWishlist = await wishlistCollection.find({ user }).toArray();
