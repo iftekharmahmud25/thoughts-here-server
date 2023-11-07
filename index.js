@@ -127,6 +127,29 @@ async function run() {
         const blogDetails = await wishlistCollection.findOne(query)
         res.send(blogDetails)
       })
+
+      app.put('/wishlist/:id', async (req, res) => {
+        const postId = req.params.id;
+        const newComment = req.body;
+      
+        try {
+          const objectId = new ObjectId(postId);
+          const result = await wishlistCollection.updateOne(
+            { _id: objectId },
+            { $push: { comments: newComment } }
+          );
+      
+          if (result.matchedCount === 0) {
+            return res.status(404).json({ error: 'Blog post not found' });
+          }
+      
+          res.json({ success: true });
+        } catch (error) {
+          console.error('Error updating comments:', error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      });
+
       
 
   
