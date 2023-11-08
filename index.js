@@ -65,6 +65,7 @@ async function run() {
         const blogDetails = await blogsCollection.findOne(query)
         res.send(blogDetails)
       })
+    
 
       app.put('/blogs/:id', async (req, res) => {
         const postId = req.params.id;
